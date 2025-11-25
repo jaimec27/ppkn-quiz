@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuis Konstitusi Indonesia</title>
+
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .quiz-container {
+      width: 90%;
+      max-width: 700px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      color: #000;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .options button {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: #e5e7eb;
+      transition: 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Hover animation */
+    .options button:hover {
+      background: #d1d5db;
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    /* Correct / wrong colors */
+    .correct-option {
+      background: #16a34a !important;
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .wrong-option {
+      background: #dc2626 !important;
+      color: white;
+      transform: scale(1.02);
+    }
+
+    /* Disable buttons */
+    .disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 18px;
+      min-height: 25px;
+    }
+
+    .correct { color: #16a34a; }
+    .wrong { color: #dc2626; }
+
+    #nextBtn {
+      margin-top: 20px;
+      padding: 14px;
+      width: 100%;
+      font-size: 18px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      display: none;
+    }
+    #nextBtn:hover {
+      background: #1d4ed8;
+      transform: scale(1.03);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .progress {
+      margin-bottom: 15px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="quiz-container">
+    <div class="progress" id="progress"></div>
+    <div id="quiz"></div>
+    <div class="feedback" id="feedback"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Pertanyaan Selanjutnya</button>
+  </div>
+
+  <script>
+    const questions = [
+      {question:"Apa itu konstitusi?", options:["Peraturan sekolah","Keseluruhan aturan tertulis dan tidak tertulis","Peraturan pajak","Perjanjian dagang"], answer:1},
+      {question:"Konstitusi bertujuan untuk…", options:["Meningkatkan ekspor","Mencegah penyalahgunaan kekuasaan","Menghapus pajak","Membatasi perdagangan"], answer:1},
+      {question:"Konstitusi pertama Indonesia adalah…", options:["UUDS 1950","UUD 1945","Konstitusi RIS","Amandemen UUD"], answer:1},
+      {question:"Konstitusi RIS berlaku pada tahun…", options:["1945-1949","1949-1950","1950-1959","1999-sekarang"], answer:1},
+      {question:"Sistem pemerintahan UUDS adalah…", options:["Presidensial","Parlementer","Monarki","Federal"], answer:1},
+      {question:"Sistem demokrasi pada Konstitusi RIS adalah…", options:["Demokrasi Pancasila","Demokrasi Liberal","Demokrasi Terpimpin","Demokrasi Sosialis"], answer:1},
+      {question:"Penyimpangan UUD 1945 terjadi karena…", options:["Perang kemerdekaan","Krisis ekonomi","Pemilu","Reformasi"], answer:0},
+      {question:"Maklumat Wakil Presiden No. X berisi tentang…", options:["Pembentukan DPR","KNIP diberi kekuasaan legislatif","Pembubaran kabinet","Pemilu pertama"], answer:1},
+      {question:"Konstitusi RIS mengubah bentuk negara menjadi…", options:["Kesatuan","Federasi","Monarki","Republik Islam"], answer:1},
+      {question:"UUDS berlaku pada tahun…", options:["1945-1949","1949-1950","1950-1959","1999-sekarang"], answer:2},
+      {question:"Dekrit Presiden 5 Juli 1959 berisi tentang…", options:["Pembubaran Konstituante","Pemberlakuan kembali UUD 1945","Pembentukan MPRS","Semua benar"], answer:3},
+      {question:"Amandemen UUD 1945 dimulai pada tahun…", options:["1950","1965","1999","2004"], answer:2},
+      {question:"Sistem pemerintahan setelah amandemen adalah…", options:["Parlementer","Presidensial","Monarki","Federal"], answer:1},
+      {question:"Lembaga baru setelah amandemen adalah…", options:["Senat","Komisi Yudisial dan Mahkamah Konstitusi","Dewan Pertimbangan Agung","KNIP"], answer:1},
+      {question:"Penyimpangan masa Orde Lama adalah…", options:["Presiden seumur hidup","Demokrasi liberal","Pemilu langsung","Kebebasan pers"], answer:0},
+      {question:"Penyimpangan masa Orde Baru adalah…", options:["Kekuasaan di tangan rakyat","Kekuasaan besar di tangan Presiden","Demokrasi langsung","Pemilu bebas"], answer:1},
+      {question:"Amandemen adalah…", options:["Penghapusan konstitusi","Perubahan sebagian konstitusi","Perubahan total konstitusi","Penambahan pasal ekonomi"], answer:1},
+      {question:"Konvensi adalah…", options:["Peraturan tertulis","Kesepakatan tidak tertulis","Peraturan pajak","Peraturan daerah"], answer:1},
+      {question:"Sistem pemerintahan Indonesia saat ini adalah…", options:["Parlementer","Monarki","Presidensial","Federal"], answer:2},
+      {question:"Tujuan negara terdapat pada…", options:["Pasal 1","Alinea kedua pembukaan UUD 1945","Alinea ketiga","Pasal 33"], answer:1}
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      answered = false;
+      document.getElementById("nextBtn").style.display = "none";
+
+      const q = questions[current];
+      document.getElementById("progress").innerText = `Pertanyaan ${current + 1} dari ${questions.length}`;
+
+      document.getElementById("quiz").innerHTML = `
+        <div class="question">${q.question}</div>
+        <div class="options">
+          ${q.options.map((opt, i) =>
+            `<button id="opt${i}" onclick="checkAnswer(${i})">${opt}</button>`
+          ).join("")}
+        </div>
+      `;
+
+      document.getElementById("feedback").innerHTML = "";
+    }
+
+    function checkAnswer(selected) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[current];
+      const correct = q.answer;
+
+      const buttons = document.querySelectorAll(".options button");
+
+      buttons.forEach(btn => btn.classList.add("disabled"));
+
+      if (selected === correct) {
+        score++;
+        document.getElementById(`opt${selected}`).classList.add("correct-option");
+        document.getElementById("feedback").innerHTML = "<span class='correct'>Benar! 👍</span>";
+      } else {
+        document.getElementById(`opt${selected}`).classList.add("wrong-option");
+        document.getElementById(`opt${correct}`).classList.add("correct-option");
+        document.getElementById("feedback").innerHTML = "<span class='wrong'>Salah! ❌</span>";
+      }
+
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.querySelector(".quiz-container").innerHTML = `
+        <h2 style="text-align:center;">🎉 Kuis Selesai!</h2>
+        <h3 style="text-align:center;">Skor Kamu: <b>${score}/${questions.length}</b></h3>
+
+        <button onclick="location.reload()" style="
+          margin-top:20px; padding:14px; width:100%; font-size:18px;
+          background:#2563eb; color:white; border:none; border-radius:12px; cursor:pointer;">
+          Coba Lagi
+        </button>
+      `;
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
